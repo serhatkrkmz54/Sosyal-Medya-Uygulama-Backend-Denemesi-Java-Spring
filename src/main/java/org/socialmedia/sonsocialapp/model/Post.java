@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +27,16 @@ public class Post {
     private String postPicture;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Like> likes = new ArrayList<>();
 
     @OneToMany
+    @ToString.Exclude
     private List<Post> replyPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne
     private Post replyFor;
@@ -38,9 +45,9 @@ public class Post {
     private boolean isPost;
 
     @CreationTimestamp
-    private Date createdAt;
+    private LocalDateTime createdAt;
     @UpdateTimestamp
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @Override
     public final boolean equals(Object o) {

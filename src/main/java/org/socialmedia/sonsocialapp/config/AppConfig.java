@@ -20,12 +20,14 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class AppConfig {
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                 .sessionManagement(session-> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests-> requests
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/**","/auth/kayit-ol").permitAll()
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)

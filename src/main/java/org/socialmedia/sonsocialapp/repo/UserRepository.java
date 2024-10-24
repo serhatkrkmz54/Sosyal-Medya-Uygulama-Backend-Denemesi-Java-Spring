@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    public User findByEmail(String email);
+    User findByEmail(String email);
 
     @Query("SELECT DISTINCT u FROM User u WHERE u.firstName LIKE %:query% OR u.email LIKE %:query%")
-    public List<User> searchUser(@Param("query") String query);
+    List<User> searchUser(@Param("query") String query);
 }

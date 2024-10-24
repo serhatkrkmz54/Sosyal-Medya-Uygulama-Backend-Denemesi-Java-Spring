@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,10 @@ import java.util.List;
 
 public class JwtTokenValidator extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         String jwt = request.getHeader(JwtConstant.JWT_HEADER);
         if (jwt!=null) {
             jwt=jwt.substring(7);
@@ -37,8 +41,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             }catch (Exception e) {
                 throw new BadCredentialsException("Geçersiz token...");
             }
-            filterChain.doFilter(request,response);
         }
-
+        filterChain.doFilter(request,response);
     }
 }
