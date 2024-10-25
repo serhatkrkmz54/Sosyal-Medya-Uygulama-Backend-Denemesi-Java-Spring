@@ -10,5 +10,5 @@ public class PostReplyRequest {
     private String content;
     private Long postId;
     private LocalDateTime createdAt;
-    private String image;
+    private String postPicture;
 }

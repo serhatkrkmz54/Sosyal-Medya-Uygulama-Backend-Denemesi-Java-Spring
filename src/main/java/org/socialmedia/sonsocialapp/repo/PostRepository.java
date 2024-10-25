@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,Long> {
-    List<Post> tumPostlariBulOlusturmaTarihi();
-    List<Post> tumPostlariBulBegeniyeveOlusturmaTarihineGore(User user);
 
     @Query("SELECT P FROM Post P JOIN P.likes I where I.user.id=:userId")
     List<Post> userIdyeGorePostBul(Long userId);

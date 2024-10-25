@@ -34,32 +34,39 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> findAllPost() {
-        return List.of();
-    }
-
-    @Override
     public Post findById(Long postId) throws PostException {
-        return null;
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostException("Gönderi bulunamadı."));
+        return post;
     }
 
     @Override
     public void deletePostById(Long postId, Long userId) throws PostException, UserException {
-
+        Post post = findById(postId);
+        if(!postId.equals(post.getUser().getId())){
+            throw new UserException("Başka kullanıcının gönderilerini silemezsiniz.");
+        }
+        postRepository.deleteById(post.getId());
     }
 
     @Override
     public Post createdReply(PostReplyRequest req, User user) throws PostException {
-        return null;
+        Post replyFor = findById(req.getPostId());
+        Post post = new Post();
+        post.setContent(req.getContent());
+        post.setCreatedAt(LocalDateTime.now());
+        post.setPostPicture(req.getPostPicture());
+        post.setReply(true);
+        post.setReplyFor(replyFor);
+        Post savedPost = postRepository.save(post);
+        post.getReplyPosts().add(savedPost);
+        postRepository.save(replyFor);
+        return replyFor;
     }
 
     @Override
     public List<Post> getUserPost(User user) {
-        return List.of();
+        return postRepository.userIdyeGorePostBul(user.getId());
     }
 
-    @Override
-    public List<Post> begeniyeGoreKullanici(User user) {
-        return List.of();
-    }
 }
