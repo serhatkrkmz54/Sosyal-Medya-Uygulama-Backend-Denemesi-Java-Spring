@@ -11,5 +11,5 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     @Query("SELECT P FROM Post P JOIN P.likes I where I.user.id=:userId")
     List<Post> userIdyeGorePostBul(Long userId);
-
+//    List<Post> getAllPosts();
 }

@@ -16,4 +16,5 @@ public interface PostService {
     public void deletePostById(Long postId, Long userId) throws PostException,UserException;
     Post createdReply(PostReplyRequest req, User user)throws PostException;
     List<Post> getUserPost(User user);
+//    List<Post> getAllPosts();
 }
