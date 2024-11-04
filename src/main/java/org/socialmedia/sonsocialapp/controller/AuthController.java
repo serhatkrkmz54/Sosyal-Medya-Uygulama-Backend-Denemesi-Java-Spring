@@ -2,9 +2,9 @@ package org.socialmedia.sonsocialapp.controller;
 
 import jdk.jshell.spi.ExecutionControl;
 import org.socialmedia.sonsocialapp.config.JwtProvider;
+import org.socialmedia.sonsocialapp.dto.VerifyUserDTO;
 import org.socialmedia.sonsocialapp.exceptions.UserException;
 import org.socialmedia.sonsocialapp.model.User;
-import org.socialmedia.sonsocialapp.model.Verification;
 import org.socialmedia.sonsocialapp.repo.UserRepository;
 import org.socialmedia.sonsocialapp.response.AuthResponse;
 import org.socialmedia.sonsocialapp.service.CustomUserDetailsServiceImpl;
@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
@@ -53,7 +55,10 @@ public class AuthController {
         createdUser.setPassword(passwordEncoder.encode(password));
         createdUser.setFirstName(firstName);
         createdUser.setBirthDate(birthDate);
-        createdUser.setVerification(new Verification());
+        createdUser.setVerificationCode(generateVerificationCode());
+        createdUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        createdUser.setEnabled(false);
+        customUserDetailsServiceImpl.sendVerificationEmail(user);
         userRepository.save(createdUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email,password);
@@ -64,6 +69,24 @@ public class AuthController {
         return new ResponseEntity<AuthResponse>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/dogrula")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDTO verifyUserDTO) {
+        try {
+            customUserDetailsServiceImpl.verifyUser(verifyUserDTO);
+            return ResponseEntity.ok("Kullanıcı doğrulandı");
+        }catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping("/tekrar-dogrula")
+    public ResponseEntity<?> reSendVerificationEmail(@RequestParam String email) {
+        try {
+            customUserDetailsServiceImpl.reSendVerificationCode(email);
+            return ResponseEntity.ok("Doğrulama kodu tekrar gönderildi.");
+        }catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @PostMapping("/giris-yap")
     public ResponseEntity<AuthResponse> signin(@RequestBody User user){
         String username = user.getEmail();
@@ -85,4 +108,8 @@ public class AuthController {
         }
         return new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
     }
+    private String generateVerificationCode() {
+        return String.valueOf((int) (Math.random() * 900000) + 100000);
+    }
+
 }

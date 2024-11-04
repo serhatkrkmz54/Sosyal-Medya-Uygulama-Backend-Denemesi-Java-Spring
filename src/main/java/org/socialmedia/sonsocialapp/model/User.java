@@ -32,6 +32,9 @@ public class User implements UserDetails {
     private String profilePic;
     private Gender gender;
     private String bio;
+    private boolean enabled;
+    private String verificationCode;
+    private LocalDateTime verificationCodeExpiresAt;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -66,8 +69,6 @@ public class User implements UserDetails {
     @ToString.Exclude
     private List<Comment> comments = new ArrayList<>();
 
-    @Embedded
-    private Verification verification;
 
     @Override
     public final boolean equals(Object o) {
@@ -112,6 +113,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return enabled;
     }
 }
